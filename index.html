@@ -47,6 +47,15 @@
                 <p class="text-gray-500 text-sm mt-0.5">CCTV & Kameraövervakning</p>
             </div>
             <div class="flex items-center gap-2">
+                <!-- Metodbeskrivning-knapp -->
+                <button onclick="openMethodModal()" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 rounded-lg border border-gray-300 shadow-sm flex items-center gap-2 transition-all" title="Läs metodbeskrivning">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span class="hidden sm:inline">Metodbeskrivning</span>
+                </button>
                 <!-- Importera-knapp (Trigger dold input) -->
                 <button onclick="handleImportClick()"
                     class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-5 rounded-lg border border-gray-300 shadow-sm flex items-center gap-2 transition-all">
@@ -116,6 +125,150 @@
         <div id="protocols-list" class="grid gap-4"></div>
 
     </main>
+
+    <!-- Metodbeskrivning-modal -->
+    <div id="method-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-2xl mx-auto w-full max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between gap-3 mb-4 pb-4 border-b border-gray-200 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 leading-tight">Metodbeskrivning: <br class="sm:hidden"><span class="text-lg font-semibold text-gray-700">Kontrollpunkter CCTV</span></h3>
+                </div>
+                <button onclick="closeMethodModal()" class="text-gray-400 hover:text-gray-600 transition p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div class="overflow-y-auto pr-2 text-sm text-gray-700 space-y-6" id="method-container">
+                <div class="mb-2">
+                    <label class="block text-gray-700 font-bold text-base mb-1">Introduktionstext</label>
+                    <textarea data-method-id="intro" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="2" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">1. Placering korrekt</h4>
+                        <button onclick="generateMethodText('m1', 'Placering korrekt')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m1" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">2. Bildvy justerad</h4>
+                        <button onclick="generateMethodText('m2', 'Bildvy justerad')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m2" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">3. Skärpa / Fokus</h4>
+                        <button onclick="generateMethodText('m3', 'Skärpa / Fokus')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m3" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">4. Ren lins / kupol</h4>
+                        <button onclick="generateMethodText('m4', 'Ren lins / kupol')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m4" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">5. Inspelning aktiv</h4>
+                        <button onclick="generateMethodText('m5', 'Inspelning aktiv')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m5" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">6. Rörelsedetektion (VMD)</h4>
+                        <button onclick="generateMethodText('m6', 'Rörelsedetektion (VMD)')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m6" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">7. Videoanalys</h4>
+                        <button onclick="generateMethodText('m7', 'Videoanalys')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m7" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">8. Nattläge / IR</h4>
+                        <button onclick="generateMethodText('m8', 'Nattläge / IR')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m8" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">9. Tidsynkronisering (NTP)</h4>
+                        <button onclick="generateMethodText('m9', 'Tidsynkronisering (NTP)')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m9" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-gray-900 text-base">10. Lösenord ändrat</h4>
+                        <button onclick="generateMethodText('m10', 'Lösenord ändrat')" class="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                            AI-generera
+                        </button>
+                    </div>
+                    <textarea data-method-id="m10" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition resize-y" rows="4" oninput="debounceSaveMethodSettings()"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-end flex-shrink-0">
+                <button onclick="closeMethodModal()"
+                    class="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition">Stäng</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Bekräftelse-modal för radering -->
     <div id="delete-modal"

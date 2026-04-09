@@ -501,7 +501,7 @@ function setupFocusRect(dropzone, cameraDiv) {
         // Ta bort texten om fokuspunkten rensas
         const notesField = cameraDiv.querySelector('[data-field="notes"]');
         if (notesField) {
-            notesField.value = notesField.value.replace('GUL RUTA = Fokuspunkt', '').replace('GUL RUTA = Fokusområde', '').trim();
+            notesField.value = notesField.value.replace('GUL RUTA = Fokuspunkt\n', '').replace('GUL RUTA = Fokuspunkt', '').replace('GUL RUTA = Fokusområde\n', '').replace('GUL RUTA = Fokusområde', '').trim();
         }
 
         scheduleSave(() => saveCameraFromDOM(cameraDiv));
@@ -554,7 +554,7 @@ function setupFocusRect(dropzone, cameraDiv) {
         const notesField = cameraDiv.querySelector('[data-field="notes"]');
         if (notesField && !notesField.value.includes('GUL RUTA = Fokusområde')) {
             const separator = notesField.value.trim() ? '\n' : '';
-            notesField.value = notesField.value.trim() + separator + 'GUL RUTA = Fokusområde';
+            notesField.value = notesField.value.trim() + separator + 'GUL RUTA = Fokusområde\n';
         }
 
         scheduleSave(() => saveCameraFromDOM(cameraDiv));

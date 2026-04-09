@@ -13,7 +13,7 @@
  */
 
 const DB_NAME = 'ProvningsprotokollCCTV';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 let _db = null;
 
@@ -43,6 +43,9 @@ function openDB() {
             }
             if (!db.objectStoreNames.contains('cameras')) {
                 db.createObjectStore('cameras');
+            }
+            if (!db.objectStoreNames.contains('settings')) {
+                db.createObjectStore('settings');
             }
         };
 
@@ -291,4 +294,22 @@ async function importCompleteProtocolData(fullData) {
     }
 
     return newId;
+}
+
+// =============================================
+// Settings
+// =============================================
+
+/**
+ * Sparar konfiguration / inställningar
+ */
+async function saveSettings(key, data) {
+    return dbPut('settings', key, data);
+}
+
+/**
+ * Läser konfiguration / inställningar
+ */
+async function loadSettings(key) {
+    return dbGet('settings', key);
 }
