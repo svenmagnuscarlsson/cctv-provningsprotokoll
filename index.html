@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provningsprotokoll - CCTV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .protocol-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .protocol-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+        }
+        .btn-new {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.2s;
+        }
+        .btn-new:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .empty-state svg {
+            opacity: 0.15;
+        }
+        .delete-btn {
+            transition: all 0.15s;
+        }
+        .delete-btn:hover {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-8 py-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 tracking-tight">PROVNINGSPROTOKOLL</h1>
+                <p class="text-gray-500 text-sm mt-0.5">CCTV & Kameraövervakning</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <!-- Importera-knapp (Trigger dold input) -->
+                <button onclick="handleImportClick()"
+                    class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-5 rounded-lg border border-gray-300 shadow-sm flex items-center gap-2 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Importera
+                </button>
+                <button onclick="createNewProtocol()"
+                    class="btn-new text-white font-semibold py-2.5 px-5 rounded-lg shadow flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Nytt protokoll
+                </button>
+            </div>
+            <!-- Dold input för import -->
+            <input type="file" id="import-input" class="hidden" accept=".json" onchange="importFile(event)">
+        </div>
+    </header>
+
+    <!-- Huvudinnehåll -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-8 py-8">
+
+        <!-- Sökfält -->
+        <div class="mb-5 search-wrapper" id="search-wrapper" style="display:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="search-input" type="search" placeholder="Sök protokoll…"
+                class="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                oninput="filterProtocols(this.value)">
+        </div>
+
+        <!-- Tom-state (visas om inga protokoll finns) -->
+        <div id="empty-state" class="hidden text-center py-20">
+            <div class="empty-state">
+                <svg class="mx-auto mb-6" xmlns="http://www.w3.org/2000/svg" width="80" height="80"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">Inga protokoll ännu</h2>
+            <p class="text-gray-500 mb-6">Skapa ditt första provningsprotokoll för att komma igång.</p>
+            <button onclick="createNewProtocol()"
+                class="btn-new text-white font-semibold py-2.5 px-6 rounded-lg shadow inline-flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                Skapa nytt protokoll
+            </button>
+        </div>
+
+        <!-- Protokoll-lista -->
+        <div id="protocols-list" class="grid gap-4"></div>
+
+    </main>
+
+    <!-- Bekräftelse-modal för radering -->
+    <div id="delete-modal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm mx-4 w-full">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Ta bort protokoll</h3>
+            </div>
+            <p class="text-gray-600 mb-6" id="delete-modal-text">Är du säker på att du vill ta bort detta protokoll?
+                Alla kameror och bilder raderas permanent.</p>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeDeleteModal()"
+                    class="px-4 py-2 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">Avbryt</button>
+                <button id="delete-confirm-btn"
+                    class="px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition shadow">Ta
+                    bort</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast-container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script src="js/db.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

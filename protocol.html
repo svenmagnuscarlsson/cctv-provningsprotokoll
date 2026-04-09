@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provningsprotokoll - CCTV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="p-4 sm:p-8">
+
+    <!-- Flytande kontrollpanel (syns ej vid utskrift) -->
+    <div class="no-print fixed top-4 right-4 flex items-center gap-2 z-50">
+        <!-- Spara-indikator -->
+        <span id="save-indicator" class="save-indicator text-xs text-gray-400 mr-1 hidden flex items-center gap-1">
+            <svg id="save-spinner" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <svg id="save-check" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span id="save-label">Sparad</span>
+        </span>
+        <a href="index.html"
+            class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded shadow border border-gray-200 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Tillbaka
+        </a>
+        <button onclick="addCamera()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M5 12h14" />
+            </svg>
+            Lägg till kamera
+        </button>
+        <button onclick="window.print()"
+            class="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded shadow flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Skapa PDF / Skriv ut
+        </button>
+    </div>
+
+    <!-- Toast-container -->
+    <div id="toast-container" class="no-print fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Huvudcontainer -->
+    <div id="document-container" class="max-w-4xl mx-auto">
+
+        <!-- SIDA 1: Projektinformation -->
+        <div class="print-page a4-wrapper rounded-lg">
+            <header class="border-b-2 border-gray-800 pb-4 mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">PROVNINGSPROTOKOLL</h1>
+                <p class="text-gray-500 text-lg">CCTV & Kameraövervakning</p>
+            </header>
+
+            <div class="space-y-8">
+                <!-- Projektinformation -->
+                <section>
+                    <h2 class="text-blue-600 font-bold text-lg mb-4 flex items-center gap-2 uppercase tracking-wide">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                        Projektinformation
+                    </h2>
+                    <div>
+                        <label class="form-label">Projektnamn / Referens</label>
+                        <input type="text" class="form-input text-lg" data-field="projectName"
+                            placeholder="Ange projektnamn...">
+                    </div>
+                </section>
+
+                <!-- Anläggning -->
+                <section>
+                    <h2 class="text-blue-600 font-bold text-lg mb-4 flex items-center gap-2 uppercase tracking-wide">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                            <rect x="9" y="9" width="6" height="6"></rect>
+                            <line x1="9" y1="1" x2="9" y2="4"></line>
+                            <line x1="15" y1="1" x2="15" y2="4"></line>
+                            <line x1="9" y1="20" x2="9" y2="23"></line>
+                            <line x1="15" y1="20" x2="15" y2="23"></line>
+                            <line x1="20" y1="9" x2="23" y2="9"></line>
+                            <line x1="20" y1="14" x2="23" y2="14"></line>
+                            <line x1="1" y1="9" x2="4" y2="9"></line>
+                            <line x1="1" y1="14" x2="4" y2="14"></line>
+                        </svg>
+                        Anläggning
+                    </h2>
+                    <div class="mb-4">
+                        <label class="form-label">Anläggningens Namn</label>
+                        <input type="text" class="form-input text-lg" data-field="facilityName" placeholder="Ange namn...">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg"
+                                    width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg> Adress</label>
+                            <input type="text" class="form-input" data-field="address" placeholder="Gatuadress...">
+                        </div>
+                        <div>
+                            <label class="form-label">Postnummer & Ort</label>
+                            <input type="text" class="form-input" data-field="postalCity"
+                                placeholder="Postnr och ort...">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Provning utförd av -->
+                <section>
+                    <h2 class="text-blue-600 font-bold text-lg mb-4 flex items-center gap-2 uppercase tracking-wide">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Provning utförd av
+                    </h2>
+                    <div class="mb-6">
+                        <label class="form-label">Installatör / Företag</label>
+                        <input type="text" class="form-input text-lg" data-field="installer"
+                            placeholder="Ange företag...">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Övergripande kommentarer</label>
+                        <textarea class="form-input h-24 resize-none" data-field="comments"
+                            placeholder="Allmänna noteringar..."></textarea>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Kamera-sidor hamnar här -->
+        <div id="cameras-container"></div>
+
+    </div>
+
+    <!-- Template för en kamera-sida -->
+    <template id="camera-template">
+        <div class="print-page a4-wrapper rounded-lg flex flex-col">
+            <!-- Header -->
+            <header class="border-b-2 border-gray-800 pb-1.5 mb-3 flex justify-between items-end">
+                <div>
+                    <input type="text"
+                        class="camera-title block text-2xl font-bold text-gray-900 bg-transparent border-0 border-b-2 border-transparent focus:border-blue-400 focus:outline-none w-full leading-tight pb-0.5 transition-colors"
+                        data-field="cameraLabel"
+                        value="K0X"
+                        placeholder="T.ex. K01">
+                    <p class="text-gray-500 text-xs">Provningsprotokoll</p>
+                </div>
+                <div class="no-print flex items-center gap-3">
+                    <span class="progress-badge" title="Avklarade kontrollpunkter">0/10</span>
+                    <button class="copy-btn flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-semibold transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Kopiera kamera
+                    </button>
+                    <button class="text-red-500 hover:text-red-700 text-sm font-semibold remove-btn">Ta bort kamera</button>
+                </div>
+            </header>
+
+            <!-- 2-kolumns layout -->
+            <div class="flex-1 grid grid-cols-[255px_1fr] gap-4">
+
+                <!-- Vänster kolumn: Specar & Checklista -->
+                <div class="space-y-3">
+                    <!-- Specifikationer -->
+                    <section>
+                        <h3 class="form-label mb-1">Specifikationer</h3>
+                        <div class="space-y-1.5">
+                            <div>
+                                <label class="text-xs text-gray-500">Placering / Zon</label>
+                                <input type="text" class="form-input text-xs" data-field="placement" placeholder="T.ex. Nyckelrum / Inomhus">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">Modell / Typ</label>
+                                <input type="text" class="form-input text-xs" data-field="model" placeholder="T.ex. Hanwha XND-C6083RV">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">IP-Adress</label>
+                                <input type="text" class="form-input text-xs" data-field="ip" placeholder="T.ex. DHCP eller statisk">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">MAC-Adress</label>
+                                <input type="text" class="form-input text-xs uppercase text-gray-400" data-field="mac"
+                                    placeholder="XX:XX:XX:XX:XX:XX">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Inkoppling -->
+                    <section>
+                        <h3 class="form-label mb-1">Inkoppling</h3>
+                        <div class="space-y-1.5">
+                            <div>
+                                <label class="text-xs text-gray-500">Ställ / Rack / Skåp</label>
+                                <input type="text" class="form-input text-xs" data-field="rack" placeholder="T.ex. D2S1">
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-500">Panel</label>
+                                    <input type="text" class="form-input text-xs" data-field="panel" placeholder="T.ex. M25">
+                                </div>
+                                <div class="w-14">
+                                    <label class="text-xs text-gray-500">Port</label>
+                                    <input type="text" class="form-input text-xs" data-field="panelPort" placeholder="24">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-500">Switch</label>
+                                    <input type="text" class="form-input text-xs" data-field="switchName" placeholder="T.ex. SAK-SW010">
+                                </div>
+                                <div class="w-14">
+                                    <label class="text-xs text-gray-500">Port</label>
+                                    <input type="text" class="form-input text-xs" data-field="switchPort" placeholder="01">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Kontrollpunkter -->
+                    <section>
+                        <h3 class="form-label mb-1">Kontrollpunkter</h3>
+                        <div class="border-t border-gray-100 pt-1">
+                            <label class="flex items-center gap-2 cursor-pointer group py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Placering korrekt</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Bildvy justerad</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Skärpa / Fokus</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Ren lins / kupol</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Inspelning aktiv</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Rörelsedetektion</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Videoanalys</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Nattläge / IR</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Tidsynkronisering (NTP)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group border-t border-gray-100 py-0.5">
+                                <div class="custom-checkbox"></div>
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-black">Lösenord ändrat</span>
+                            </label>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Höger kolumn: Bild, Noteringar, Signatur -->
+                <div class="flex flex-col h-full">
+
+                    <!-- Kameravy (Dropzone/Paste) -->
+                    <section class="mb-3">
+                        <h3 class="form-label mb-1">Kameravy</h3>
+                        <div class="image-dropzone relative w-full bg-gray-100 border-2 border-dashed border-gray-300 rounded text-gray-500 overflow-hidden"
+                            style="min-height: 160px;"
+                            tabindex="0" title="Klicka för att markera och tryck Ctrl+V">
+
+                            <!-- Placeholder text -->
+                            <div class="placeholder-content absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <svg class="mb-1.5" xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span class="text-xs font-medium">Klicka här och tryck <b>Ctrl+V</b> för att klistra in</span>
+                                <span class="text-xs mt-0.5 text-gray-400">eller dra och släpp en bild</span>
+                            </div>
+
+                            <img class="preview-img block w-full h-auto hidden pointer-events-none"
+                                src="" alt="Kameravy">
+
+                            <!-- SVG-overlay för fokusrektangel -->
+                            <svg class="focus-overlay absolute inset-0 w-full h-full hidden"
+                                 style="z-index: 16; cursor: crosshair;"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <rect class="focus-rect" fill="none" stroke="#facc15" stroke-width="2"
+                                      x="0%" y="0%" width="0%" height="0%"/>
+                            </svg>
+                            <button class="clear-focus-btn no-print hidden absolute bottom-2 left-2 z-20
+                                           bg-black/60 hover:bg-black/80 text-yellow-300 text-xs font-semibold
+                                           px-2 py-0.5 rounded transition-colors"
+                                    title="Ta bort fokusmarkering">✕ Markering</button>
+
+                            <input type="file" accept="image/*"
+                                class="file-input absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                title="Välj fil">
+
+                            <button
+                                class="remove-image-btn no-print hidden absolute top-2 right-2 bg-red-500 text-white p-1 rounded z-20 hover:bg-red-600 shadow"
+                                title="Ta bort bild">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Noteringar -->
+                    <section class="flex-1 flex flex-col mb-3">
+                        <h3 class="form-label mb-1">Noteringar</h3>
+                        <textarea class="form-input flex-1 resize-none min-h-[56px] text-sm" data-field="notes"
+                            placeholder="Specifika anmärkningar för denna kamera..."></textarea>
+                    </section>
+
+                    <!-- Footer (Datum & Signatur) -->
+                    <section class="border-t border-gray-200 pt-2 grid grid-cols-2 gap-3 mt-auto">
+                        <div>
+                            <label class="text-xs font-semibold text-gray-500">Provningsdatum</label>
+                            <input type="date" class="form-input text-xs" data-field="date">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-500">Signatur</label>
+                            <input type="text" class="form-input text-xs" data-field="signature" placeholder="Namnförtydligande...">
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- Paginering/Footer för utskrift -->
+            <div class="border-t border-gray-100 mt-2 pt-2 flex justify-between text-xs text-gray-400">
+                <span class="camera-footer-id">Kamera: K0X</span>
+                <span>Sida <span class="page-num"></span></span>
+            </div>
+        </div>
+    </template>
+
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
