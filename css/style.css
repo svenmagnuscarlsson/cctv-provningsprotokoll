@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+/* Anpassningar för formulärfält */
+.form-input {
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    margin-top: 0.2rem;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Utskrifts-CSS för PDF-generering */
+@media print {
+    body {
+        background-color: white;
+        padding: 0 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .print-page {
+        page-break-after: always;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 1.1cm 1.2cm !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .print-page:last-child {
+        page-break-after: auto;
+    }
+
+    /* Tvinga bakgrundsfärger/linjer att synas i PDF */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Dölj fil-input knappen vid utskrift */
+    input[type="file"] {
+        display: none;
+    }
+
+    /* Kompaktare fält vid utskrift */
+    .form-input {
+        padding: 0.2rem 0.35rem !important;
+        margin-top: 0.1rem !important;
+        font-size: 0.7rem !important;
+    }
+
+    .custom-checkbox {
+        width: 1rem !important;
+        height: 1rem !important;
+        flex-shrink: 0;
+    }
+}
+
+/* Visuell A4-simulering på skärmen */
+@media screen {
+    .a4-wrapper {
+        min-height: 297mm;
+        background: white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+        padding: 2rem;
+    }
+}
+
+/* Checkbox styling */
+.custom-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid #d1d5db;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.custom-checkbox.checked {
+    background-color: white;
+    border-color: #3b82f6;
+}
+
+.custom-checkbox.checked::after {
+    content: '✓';
+    color: #3b82f6;
+    font-weight: bold;
+}
+
+/* Bild placeholder som kan få fokus för Ctrl+V */
+.image-dropzone {
+    transition: all 0.2s;
+}
+
+.image-dropzone:focus {
+    outline: 2px dashed #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Drag-over state */
+.image-dropzone.drag-over {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+
+/* Progress badge på kamerakort */
+.progress-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, color 0.2s;
+}
+.progress-badge.complete {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #86efac;
+}
+
+/* Toast-notiser */
+@keyframes toastIn {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes toastOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+.toast {
+    animation: toastIn 0.2s ease-out;
+}
+.toast.removing {
+    animation: toastOut 0.25s ease-in forwards;
+}
+
+/* Spara-indikator i redigeraren */
+.save-indicator {
+    transition: opacity 0.4s;
+}
+
+/* Sökfält på dashboard */
+.search-wrapper {
+    position: relative;
+}
+.search-wrapper svg {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #9ca3af;
+}
