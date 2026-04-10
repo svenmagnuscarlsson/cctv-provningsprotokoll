@@ -11,10 +11,15 @@ En fristående webbapplikation för att skapa, redigera och hantera CCTV-provnin
 *   **Protokollredigerare (`protocol.html` / `app.js`)**
     *   Detaljerat formulär för att mata in all data för CCTV-inspektionen.
     *   Stöd för bilduppladdning och nedskalning av kamerabilder för att optimera prestanda.
+    *   **Fokusområde på bilder**: Rita rektanglar på kamerabilder för att markera intresseområden, vilket automatiskt uppdaterar kamerans noteringar.
     *   Redigerbara kameraetiketter (labels).
     *   Bilderna behåller sitt ursprungliga bildförhållande (aspect ratio).
 *   **A4-Utskrift & Export**
-    *   Fullt anpassad layout för smidig och korrekt utskrift via webbläsarens inbyggda utskriftsfunktion (anpassat för att exakt rymmas på A4-format).
+    *   Fullt anpassad layout för smidig och korrekt utskrift (exakt anpassad för A4).
+    *   En skräddarsydd utskriftsdialog ger användaren möjlighet att bifoga en prydligt uppställd metodbeskrivnings-bilaga sist i protokollet.
+*   **Inställningar & Metodbeskrivning**
+    *   Lokal lagring och redigering av globala app-inställningar direkt i webbläsaren.
+    *   I Dashboarden kan användaren editera metodbeskrivningen för varje kontrollpunkt (Syfte, Metod och Kriterium). Den presenteras sedan formaterad i en elegant trekolumnslayout vid framtagande av dokumentation.
 *   **Lokal Datalagring (`db.js`)**
     *   All data, inklusive uppladdade bilder och formulärfält, sparas automatiskt lokalt i webbläsarens **IndexedDB**.
     *   Ingen backend, databas eller specifik servermjukvara krävs, vilket innebär att appen är blixtsnabb och din data stannar lokalt på din enhet.
