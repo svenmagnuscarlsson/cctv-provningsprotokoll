@@ -74,6 +74,10 @@ async function renderProtocolList() {
     renderCards(_allProtocols);
 }
 
+/**
+ * Renders protocol cards and appends them to the list element.
+ * @param {Array<Object>} items - Array of protocol item objects.
+ */
 function renderCards(items) {
     const listEl = document.getElementById('protocols-list');
     listEl.innerHTML = '';
@@ -179,6 +183,11 @@ function createProtocolCard(id, data, cameraCount) {
 // Delete modal
 // =============================================
 
+/**
+ * Shows the delete confirmation modal for a specific protocol.
+ * @param {string} id - The protocol ID.
+ * @param {string} title - The title of the protocol.
+ */
 function showDeleteModal(id, title) {
     _deleteTargetId = id;
     document.getElementById('delete-modal-text').textContent =
@@ -187,11 +196,18 @@ function showDeleteModal(id, title) {
     document.getElementById('delete-confirm-btn').onclick = confirmDelete;
 }
 
+/**
+ * Closes the delete confirmation modal.
+ */
 function closeDeleteModal() {
     _deleteTargetId = null;
     document.getElementById('delete-modal').classList.add('hidden');
 }
 
+/**
+ * Confirms and executes the deletion of the selected protocol.
+ * @returns {Promise<void>}
+ */
 async function confirmDelete() {
     if (!_deleteTargetId) return;
     await deleteProtocol(_deleteTargetId);
@@ -219,6 +235,10 @@ const defaultMethodSettings = {
 
 let methodSaveTimeout = null;
 
+/**
+ * Opens the methodology settings modal and populates textareas with current settings.
+ * @returns {Promise<void>}
+ */
 async function openMethodModal() {
     document.getElementById('method-modal').classList.remove('hidden');
     
@@ -239,6 +259,9 @@ async function openMethodModal() {
     });
 }
 
+/**
+ * Closes the methodology settings modal and saves any pending changes immediately.
+ */
 function closeMethodModal() {
     document.getElementById('method-modal').classList.add('hidden');
     // Force immediate save on close
@@ -280,14 +303,14 @@ async function saveMethodSettings() {
 }
 
 /**
- * AI generation using OpenAI (stores key in localStorage)
+ * AI generation using Google Gemini (stores key in localStorage)
  */
 async function generateMethodText(methodId, theme) {
-    let apiKey = localStorage.getItem('openai_api_key');
+    let apiKey = localStorage.getItem('gemini_api_key');
     if (!apiKey) {
-        apiKey = prompt('Ange din OpenAI API-nyckel för att generera text:');
+        apiKey = prompt('Ange din Gemini API-nyckel (finns i Google AI Studio) för att generera text:');
         if (!apiKey) return;
-        localStorage.setItem('openai_api_key', apiKey);
+        localStorage.setItem('gemini_api_key', apiKey.trim());
     }
 
     const textarea = document.querySelector(`textarea[data-method-id="${methodId}"]`);
@@ -298,40 +321,35 @@ async function generateMethodText(methodId, theme) {
     textarea.disabled = true;
 
     try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [
-                    {
-                        role: "system",
-                        content: "Du är en expert på systematiskt säkerhetsarbete och CCTV (kameraövervakning). Din uppgift är att skriva en kort och koncis metodbeskrivning per kontrollpunkt."
-                    },
-                    {
-                        role: "user",
-                        content: `Skriv en metodbeskrivning för kontrollpunkten "${theme}" för en CCTV-installation. Svaret MÅSTE exakt följa detta format, med tre rader, utan inledning eller avslutning.\nSyfte: [text]\nMetod: [text]\nKriterium: [text]`
-                    }
-                ],
-                max_tokens: 250,
-                temperature: 0.7
+                systemInstruction: {
+                    parts: [{ text: "Du är en expert på systematiskt säkerhetsarbete och CCTV (kameraövervakning). Din uppgift är att skriva en kort och koncis metodbeskrivning per kontrollpunkt." }]
+                },
+                contents: [{
+                    parts: [{ text: `Skriv en metodbeskrivning för kontrollpunkten "${theme}" för en CCTV-installation. Svaret MÅSTE exakt följa detta format, med tre rader, utan inledning eller avslutning.\nSyfte: [text]\nMetod: [text]\nKriterium: [text]` }]
+                }],
+                generationConfig: {
+                    temperature: 0.7
+                }
             })
         });
 
-        if (response.status === 401) {
-            localStorage.removeItem('openai_api_key');
-            throw new Error("Ogiltig API-nyckel. Försök igen.");
+        if (response.status === 400 || response.status === 401 || response.status === 403) {
+            localStorage.removeItem('gemini_api_key');
+            throw new Error("Ogiltig API-nyckel eller otillräcklig behörighet. Kontrollera din nyckel i Google AI Studio. Försök igen.");
         }
 
         if (!response.ok) {
-            throw new Error("Ett fel uppstod vid kommunikation med AI.");
+            throw new Error(`Ett fel uppstod vid kommunikation med AI (Statuskod: ${response.status}).`);
         }
 
         const data = await response.json();
-        const generatedText = data.choices[0].message.content.trim();
+        const generatedText = data.candidates[0].content.parts[0].text.trim();
         textarea.value = generatedText;
         
         // Trigger save
@@ -350,6 +368,12 @@ async function generateMethodText(methodId, theme) {
 // Duplicate
 // =============================================
 
+/**
+ * Handles the duplication of a protocol.
+ * @param {string} id - The default protocol ID to duplicate.
+ * @param {string} title - The display title of the protocol.
+ * @returns {Promise<void>}
+ */
 async function handleDuplicate(id, title) {
     try {
         await duplicateProtocol(id);
@@ -365,6 +389,12 @@ async function handleDuplicate(id, title) {
 // Export / Import
 // =============================================
 
+/**
+ * Exports a protocol as a downloadable JSON file.
+ * @param {string} id - The protocol ID.
+ * @param {string} projectName - The project's name used for the file name.
+ * @returns {Promise<void>}
+ */
 async function exportProtocol(id, projectName) {
     try {
         const data = await getCompleteProtocolData(id);
@@ -394,10 +424,18 @@ async function exportProtocol(id, projectName) {
     }
 }
 
+/**
+ * Opens the file browser for importing a protocol JSON file.
+ */
 function handleImportClick() {
     document.getElementById('import-input').click();
 }
 
+/**
+ * Processes the selected JSON file and imports the protocol data.
+ * @param {Event} event - The file input change event.
+ * @returns {Promise<void>}
+ */
 async function importFile(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -455,6 +493,11 @@ function showToast(message, type = 'success') {
 // Hjälpfunktioner
 // =============================================
 
+/**
+ * Formats an ISO date string into a local swedish date string format.
+ * @param {string} isoString - The ISO date string.
+ * @returns {string} The formatted date string or a dash if invalid.
+ */
 function formatDate(isoString) {
     if (!isoString) return '—';
     try {
@@ -465,6 +508,11 @@ function formatDate(isoString) {
     }
 }
 
+/**
+ * Escapes characters in a string to safe HTML entities to prevent XSS.
+ * @param {string} str - The unescaped string.
+ * @returns {string} The escaped safe HTML string.
+ */
 function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str || '';
