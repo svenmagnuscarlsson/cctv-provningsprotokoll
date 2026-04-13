@@ -297,6 +297,29 @@ async function importCompleteProtocolData(fullData) {
 }
 
 // =============================================
+// Standardvärden för metodbeskrivning
+// =============================================
+
+/**
+ * Standardvärden för metodbeskrivningen.
+ * Används som fallback om ingen metodbeskrivning finns sparad i IndexedDB.
+ * Dessa värden sparas ALDRIG automatiskt – de används bara som läsfallback.
+ */
+const defaultMethodSettings = {
+    intro: "Denna bilaga beskriver tillvägagångssättet för verifiering av systemets funktion och installation. Varje punkt ska utföras och dokumenteras enligt nedan.",
+    m1: "Syfte: Säkerställa att kameran är monterad enligt projekteringsritning och täcker det tänkta bevakningsområdet.\nMetod: Kontrollera fysisk position mot ritning. Verifiera att montagehöjd och vinkel medger avsedd identifieringsgrad (t.ex. enligt EN 62676-4).\nKriterium: Kameran sitter på angiven plats utan skymd sikt från fasta installationer (skyltar, belysning etc.).",
+    m2: "Syfte: Verifiera att kamerans synfält (FOV) är optimerat.\nMetod: Kontrollera bildutsnittet i VMS (Video Management System). Justera panorering, lutning och zoom.\nKriterium: Horisonten ska vara rak och onödig information (t.ex. för mycket himmel eller närliggande väggar) ska minimeras.",
+    m3: "Syfte: Säkerställa maximal detaljåtergivning i prioriterat område.\nMetod: Fokus ställs mot den definierade fokuspunkten (markerad med gul ruta i protokollet). Kontrollera skärpan vid både full vidvinkel och inzoomat läge om relevant.\nKriterium: Text eller ansikten i fokusområdet ska vara knivskarpa utan digitalt brus.",
+    m4: "Syfte: Förebygga bildstörningar och reflexer.\nMetod: Okulär besiktning av kamerans frontglas eller kupol efter slutfört montage.\nKriterium: Inga fingeravtryck, byggdamm eller repor får förekomma. Rengöring ska ske med mikrofiberduk och anpassat rengöringsmedel.",
+    m5: "Syfte: Garantera att bildmaterialet lagras korrekt.\nMetod: Utför en manuell triggning eller vänta på schemalagd inspelning. Gå in i arkivet och gör en playback av sekvensen.\nKriterium: Video kan spelas upp utan avbrott med korrekt bildhastighet (fps) och upplösning.",
+    m6: "Syfte: Optimera lagring och larmhantering.\nMetod: Utför ett \"gångtest\" i det aktuella området. Kontrollera att systemet indikerar larm/inspelning.\nKriterium: Detektering sker i hela det önskade området, men exkluderar störningskällor som träd eller flaggor.",
+    m7: "Syfte: Verifiera intelligenta funktioner (t.ex. linjepassage eller staketlarm).\nMetod: Provgå de uppsatta reglerna i analysmjukvaran.\nKriterium: Larm genereras i VMS vid regelbrott med korrekt metadata-taggning.",
+    m8: "Syfte: Säkerställa bildkvalitet under dygnets mörka timmar.\nMetod: Forcera kameran i nattläge (täck ljussensorn) eller kontrollera loggar från nattetid.\nKriterium: IR-belysningen ska täcka hela bildvyn utan \"hotspots\" (överexponering i mitten) eller reflexer från kupolen.",
+    m9: "Syfte: Juridisk giltighet vid bevisföring.\nMetod: Kontrollera att kamerans interna klocka matchar serverns och referenstid.\nKriterium: Tidstämplen får inte avvika mer än ±1 sekund från systemtiden.",
+    m10: "Syfte: Cybersäkerhet.\nMetod: Försök logga in med tillverkarens standarduppgifter (t.ex. admin/admin).\nKriterium: Inloggning med standarduppgifter nekas. Unikt, starkt lösenord är applicerat enligt gällande säkerhetspolicy."
+};
+
+// =============================================
 // Settings
 // =============================================
 

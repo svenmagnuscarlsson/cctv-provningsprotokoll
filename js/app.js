@@ -1,4 +1,4 @@
-﻿let cameraCount = 0;
+let cameraCount = 0;
 let protocolId = null;
 
 // Debounce-timer för autosparning
@@ -781,13 +781,10 @@ async function handlePrint() {
     }
 
     try {
-        // Skapa en DOM-nod för metodbeskrivningen
-        const methodData = await loadSettings('methodDescription');
-        if (!methodData) {
-            alert('Kunde inte hitta någon metodbeskrivning i databasen.');
-            window.print();
-            return;
-        }
+        // Skapa en DOM-nod för metodbeskrivningen.
+        // Använd sparade värden om de finns, annars standardvärden (defaultMethodSettings från db.js).
+        // Standardvärdena sparas aldrig automatiskt – de används bara som läsfallback.
+        const methodData = (await loadSettings('methodDescription')) ?? defaultMethodSettings;
 
         const container = document.getElementById('document-container');
         if (!container) {
