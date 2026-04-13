@@ -394,7 +394,8 @@ async function exportProtocol(id, projectName) {
         const url = URL.createObjectURL(blob);
 
         const safeFileName = (projectName || 'Namnlöst').replace(/[<>:"/\\|?*]/g, '_');
-        const fileName = `Protokoll_${safeFileName}.json`;
+        const today = new Date().toLocaleDateString('sv-SE').replace(/-/g, '');
+        const fileName = `Protokoll_${safeFileName}_${today}.json`;
         const a = document.createElement('a');
         a.href = url;
         a.download = fileName;
